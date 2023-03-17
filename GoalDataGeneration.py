@@ -26,6 +26,7 @@ from scipy.stats import poisson
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import numpy as np
+import csv
 import sys
 
 # import our Random class from Random.py file - contains Poisson method
@@ -80,11 +81,6 @@ if __name__ == "__main__":
         p = sys.argv.index('-beta')
         b = float(sys.argv[p+1])
         
-    if '-rate' in sys.argv:
-        p = sys.argv.index('-rate')
-        ptemp = float(sys.argv[p+1])
-        if ptemp > 0:
-            rate = ptemp
             
     if '-Nmeas' in sys.argv:
         p = sys.argv.index('-Nmeas')
@@ -109,28 +105,55 @@ if __name__ == "__main__":
     print(a)
     print(b)
     
-    # sample data and either output in the command window (else) or output in a text file as named in the command line after -output
+    # TODO: plot gamma function, save figure
+    # TODO: potential: save array of lambdas used and overlay on top of gamma function to see if we accurately sampled the distribution
+    # Sample data and either output in the command window (else) or output in a text file as named in the command line after -output
+    
+    rates_list = []
     if doOutputFile:
         outfile = open(OutputFileName, 'w')
         outfile.write(str(rate)+" \n")
         for e in range(0,Nexp):
             # pull a random variable from a gamma distribution
-            r = stats.gamma.rvs(a, size=None, scale=b)
-            if r > 0:
-                rate = r
-            print("rate: ", rate)
+            # TODO: change so that a lambda is pulled for each measurment, not just each experiment (or season)
             for t in range(0,Nmeas):
+                rate = random.Gamma(a,b)
+                rates_list.append(rate)
+                print("rate: ", rate)
                 outfile.write(str(random.Poisson(rate))+" ")
             outfile.write(" \n")
         outfile.close()
+        
     else:
         print(rate)
         for e in range(0,Nexp):
-            r = stats.gamma.rvs(a, size=None, scale=b)
-            print(r)
-            if r >= 0:
-                rate = r
-            print("rate: ", rate)
             for t in range(0,Nmeas):
+                rate = random.Gamma(a,b)
+                rates_list.append(rate)
                 print(random.Poisson(rate), end=' ')
             print(" ")
+    
+    rate_file = open("ratestest1.txt", 'w')
+    for l in rates_list:
+        rate_file.write(str(l)+"\n")
+    rate_file.close()
+    
+    
+    #print("Rates list: ",rates_list)
+
+    # Plot gamma distribution used along with lambda values sampled through running the simulation
+    #define x-axis values
+    x = np.linspace (0, 30, 2000) 
+
+    #calculate pdf of Gamma distribution for each x-value
+    H0 = stats.gamma.pdf(x, a=a, scale=b)
+
+    #create plot of Gamma distribution
+    title = "H0 Gamma Distribution - Alpha: " + str(a) + " & Beta: " + str(b)
+    plt.plot(x, H0, color='purple', label = title)
+    plt.hist(rates_list, density=True, bins='auto',histtype="bar", alpha=0.2, color='pink',ec='black', label = "Sampled Rates from Gamma Distribution")
+    plt.title("Hypothesis Gamma Distribution with Sampled Rate Values")
+    plt.legend()
+
+    #display plot
+    plt.show()

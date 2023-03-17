@@ -53,10 +53,20 @@ class Random:
 
     def Poisson(self, lam):
         x = np.random.poisson(lam,size=None)
-        
+    
         return x
+    
+    """ Gamma Distribution """
+    # function returns a random real value drawn from a gamma distrubution (domain limited to 0 - infinity)
+    
+    def Gamma(self, alpha, beta):
+        x = np.random.gamma(alpha,scale=beta,size=None)
         
-    ###################################################################################################
+        if x >= 0:
+            return x
+        else:
+            return print("gamma error")
+         ###################################################################################################
 
     # function returns a random integer (0 or 1) according to a Bernoulli distr.
     def Bernoulli(self, p=0.5):

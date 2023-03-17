@@ -131,9 +131,7 @@ if __name__ == "__main__":
     goals2_avg = Sorter.BubbleSort(goals2_avg)
     
     
-    """ Code to calculate different quantimes of the assorted arrays of outcomes """
-    #print("times: ", times)
-    #print("times_avg: ", times_avg)
+    """ Code to calculate different quantiles of the assorted arrays of outcomes """
     
     # Quantiles of Times array
     print("goals of H0 : ", goals)
@@ -155,8 +153,8 @@ if __name__ == "__main__":
 
     
     # plot formating options
-    title = ' Simulated Random Sampling of Goals under Two Different Rate Parameter Hypotheses'
-    plt.xlabel('Average Number of Goals', fontsize=12)
+    title = ' ***CHANGE**** Random Sampling of Goals under Two Different Rate Parameter Hypotheses'
+    plt.xlabel('X - Number of Goals', fontsize=12)
     plt.ylabel('Probability', fontsize=12)
     plt.title(title, fontsize=14)
     plt.grid(True)
