@@ -45,6 +45,7 @@ if __name__ == "__main__":
         print (" -Nmeas              number of games observed per season")
         print (" -Nexp               number of seasons observed")
         print (" -output [filename]  filename to save data output to") 
+        print (" -rateoutput [filename] filename to save rate list to -- used for GammaGraphComparison purposes")
         sys.exit(1)
 
     # default seed
@@ -54,11 +55,11 @@ if __name__ == "__main__":
     rate = 1
 
     # default number of measurements which corresponds to games since we take one measurement a game
-    Nmeas = 1
+    Nmeas = 100
 
     # default number of experiments, number of times we observe set number of games e.g. seasons. 
     #(Ex. if Nmeas=10 and Nexp=5, then we will observe 10 games, 5 times over, observing 50 games total)
-    Nexp = 1
+    Nexp = 10
     
     # Default alpha and beta values (shape, rate)
     # TODO: check whether it should be 
@@ -67,6 +68,9 @@ if __name__ == "__main__":
 
     # output file defaults
     doOutputFile = False
+    
+    # rate output file default
+    rateDoOutputFile = False
 
     # read the user-provided seed from the command line (if there)
     if '-seed' in sys.argv:
@@ -98,15 +102,19 @@ if __name__ == "__main__":
         p = sys.argv.index('-output')
         OutputFileName = sys.argv[p+1]
         doOutputFile = True
+    
+    if '-rateoutput' in sys.argv:
+        p = sys.argv.index('-rateoutput')
+        RateOutputFileName = sys.argv[p+1]
+        rateDoOutputFile = True
 
     # class instance of our Random class using seed - It will call for the data to be sampled from a poisson distribution
     random = Random(seed)
     
-    print(a)
-    print(b)
+    # Print alpha and beta used
+    print("Alpha = ", a)
+    print("Beta = ", b)
     
-    # TODO: plot gamma function, save figure
-    # TODO: potential: save array of lambdas used and overlay on top of gamma function to see if we accurately sampled the distribution
     # Sample data and either output in the command window (else) or output in a text file as named in the command line after -output
     
     rates_list = []
@@ -115,11 +123,9 @@ if __name__ == "__main__":
         outfile.write(str(rate)+" \n")
         for e in range(0,Nexp):
             # pull a random variable from a gamma distribution
-            # TODO: change so that a lambda is pulled for each measurment, not just each experiment (or season)
             for t in range(0,Nmeas):
                 rate = random.Gamma(a,b)
                 rates_list.append(rate)
-                print("rate: ", rate)
                 outfile.write(str(random.Poisson(rate))+" ")
             outfile.write(" \n")
         outfile.close()
@@ -133,10 +139,13 @@ if __name__ == "__main__":
                 print(random.Poisson(rate), end=' ')
             print(" ")
     
-    rate_file = open("ratestest1.txt", 'w')
-    for l in rates_list:
-        rate_file.write(str(l)+"\n")
-    rate_file.close()
+    # Save list of rates used to a file (will only happen if prompted from cmd line)
+    if rateDoOutputFile:
+        rate_file = open(RateOutputFileName, 'w')
+        for l in rates_list:
+            rate_file.write("\n")
+            rate_file.write(str(l))
+        rate_file.close()
     
     
     #print("Rates list: ",rates_list)
@@ -147,13 +156,16 @@ if __name__ == "__main__":
 
     #calculate pdf of Gamma distribution for each x-value
     H0 = stats.gamma.pdf(x, a=a, scale=b)
-
     #create plot of Gamma distribution
-    title = "H0 Gamma Distribution - Alpha: " + str(a) + " & Beta: " + str(b)
-    plt.plot(x, H0, color='purple', label = title)
-    plt.hist(rates_list, density=True, bins='auto',histtype="bar", alpha=0.2, color='pink',ec='black', label = "Sampled Rates from Gamma Distribution")
-    plt.title("Hypothesis Gamma Distribution with Sampled Rate Values")
-    plt.legend()
+    title = "Gamma Distribution with Alpha: " + str(a) + " & Beta: " + str(b)
 
-    #display plot
+    plt.plot(x, H0, color='purple', label = title)
+    plt.hist(rates_list, density=True, bins='auto',histtype="bar", alpha=0.2, color='pink',ec='black',label= "Sampled rates from Gamma Distribution")
+    
+    plt.title("Hypothesis Gamma Distribution - Alpha: " + str(a) + " & Beta: " + str(b) + " with Sampled Rate Values")
+    plt.ylim(0,0.26)
+    plt.xlim(-2,32)
+    plt.legend()
     plt.show()
+    
+    """ end """
