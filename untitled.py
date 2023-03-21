@@ -53,7 +53,6 @@ if __name__ == "__main__":
         print (" -inputH1 [filename]   alternative hypothesis data to be analyzed")
         sys.exit(1)
     
-
         
     """ 
     Read in data and computer numerical estimate of probability distribution
@@ -103,6 +102,7 @@ if __name__ == "__main__":
 
         
     """ Histogram of Vector of Outcomes """
+    
     title1 = "H0 Simulated Data - Alpha: 2 & Beta: 1.5"
     title2 = "H1 Simulated Data - Alpha: 4 & Beta: 2.5"
     
@@ -149,7 +149,6 @@ if __name__ == "__main__":
     
     """At the end of this step, we have three arrays at our disposal (for each hypothesis) One array is the number of goals scored in the dataset, nexxt is the probabilities of scoring that number of goals in a game, and lastly, the counts"""
     
-    
     """ Histogram of Probability Distribution """
     title1 = "H0 Probabilities - Alpha: 2 & Beta: 1.5"
     title2 = "H1 Probabilities - Alpha: 4 & Beta: 2.5"
@@ -162,4 +161,23 @@ if __name__ == "__main__":
     plt.xlabel("Number of Goals Scored")
     plt.show()
     
+    
     """ Calculate the Log Likelihood Ratio """
+    # In this portion of the code, we will actually calculate the Log Likelihood Ratio (LLR) for the data. We will find the LLR for each experiment we did. 
+    
+    # LLR for Hypothesis H0
+    LLR_H0 = []
+    with open(InputFileH0) as ifile:
+        H0_data = np.loadtxt(InputFileH0, dtype=float)
+        print("H0 Data: ", H0_data)
+        
+        # loop over each experiment
+        for i in H0_data:
+            s = 2
+    
+    # LLR for Hypothesis H1
+    H1_data = np.loadtxt(InputFileH1, dtype=int, skiprows=1)
+    print("H1 Data: ", H1_data)
+    
+    
+    

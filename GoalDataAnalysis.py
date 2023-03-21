@@ -177,7 +177,7 @@ if __name__ == "__main__":
     
     """ Calculating the Log Likelihood Ratio for Each Experiment Under Each Hypothesis """
     
-    """ Algorithm to Calculate LogLikeRatio for H1 """
+    """ Algorithm to Calculate LogLikeRatio for H0 """
     LogLikeRatio_H0 = []
     with open(InputFile) as ifile:
         H0_data = np.loadtxt(InputFile, dtype=int, skiprows=1)
