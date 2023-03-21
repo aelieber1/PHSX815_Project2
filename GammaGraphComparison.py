@@ -1,5 +1,10 @@
 """
+Code to Compare Gamma Distribution Graphs for Both Hypotheses
 
+    - This code could have allowed for user input of the alphas, betas, and rate files, but since I was showing this for just my scenario, I didn't take the time to add those commands in. Nevertheless, I wanted to note that here, that this woudl be a good thing to add if more scenarios were beting tested, to ease the workflow of the code I have created
+    
+Author: @aelieber1
+Date: March 10, 2023
 """
 
 from scipy.stats import poisson

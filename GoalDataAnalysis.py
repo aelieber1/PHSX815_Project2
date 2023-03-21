@@ -37,7 +37,7 @@ from scipy.stats import poisson
 sys.path.append(".")
 from MySort import MySort
 
-# main function for our CookieAnalysis Python code
+# main function for our Python code
 if __name__ == "__main__":
    
     haveInput = False

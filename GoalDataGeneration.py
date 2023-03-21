@@ -5,8 +5,9 @@ Purpose: To randomly sample values from a poisson distribution given a certain r
 The scenario that this is simulating is measurements of the number of goals per game across many
 seasons. The user can set the following parameters from the command line such as number of experiments (Nexp), number of measurements (Nmeas), whether or not to save the output as a txt file (output), and finally the alpha and beta values for the proposed gamma function (alpha, beta). The rate parameter in the experiment will be sampled from the resulting gamma distribution. 
 
-The rate parameter will be the only parameter deliberately changed when sampling data for the 
-two hypotheses. Other parameters such as number of measurements and number of experiments can also be 
+The rate parameter will be sampled for each measurment from the Poission distribution's conjugate prior, the Gamma distribution. 
+
+Other parameters such as number of measurements and number of experiments can also be 
 set by the user from the command line. For example, if the user sets Nmeas=10 and Nexp=5, then the code
 will simulate data as if 10 games were observed, 5 times over, which means a total of 50 game score 
 observations. 
@@ -120,7 +121,6 @@ if __name__ == "__main__":
     rates_list = []
     if doOutputFile:
         outfile = open(OutputFileName, 'w')
-        outfile.write(str(rate)+" \n")
         for e in range(0,Nexp):
             # pull a random variable from a gamma distribution
             for t in range(0,Nmeas):
