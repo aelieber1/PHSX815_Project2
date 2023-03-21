@@ -1,61 +1,65 @@
-"""
-Goal Data Analysis Code 
+""" 
+Goal Data Analysis Code
 
-Purpose: To analyze the data and perform a simple hypothesis test following the steps outlined below.
-    1. In command line, input the two datasets (simulated code under different hypotheses, that need to be tested
-    2. Read in each file, read in the rate, and create an array with all of the measurements - an additional array 
-        is made of the averages per experiment as well. 
-    3. For these data, each array of observations is sorted, quantiles are calculated, and the data is plotted as 
-        histograms to visualize the data before further analysis is completed. 
-    4. Computed the LogLikelihood Ratio for each hypothesis dataset according to Poisson probability
-    5. From this, the critical test statistic is calculated according to a specific alpha value
-    6. Finally this data is plotted, along with the critical test statistic, and the power of the test is displayed
-
+Purpose: To analyze the data and perform a hypothesis test following the procedure below:
+    1. From the command line, the user can input the two datasets for the two hypotheses we are testing.
+    2. The code will read in each file, and create an array of the measurements.
+    
 Author: @aelieber1
-Code Adapted from these sources: 
-    - @crogan PHSX815 Github Week 1 & 2
-    - Documentation for NumPy Arrays
-    - Documentation for Scipy.Stats Poisson - Probability Mass Function
-    - Documentation for Matplotlib.pyplot - for plotting formatting
-    - Geeks for Geeks Website to aid with language of 
-            - array manipluation  
-            - formatting text on plot
-            - index selection of NumPy arrays
-    - Utlized some StackOverflow forums to circumvent issues in coding outoput/structure
-"""
+Code also adapted from these sources:
+    - 
+    
+    
+    
+    FIX ME FIX ME !!!!!!!!!!!!!&&&&&&&&&&!!!!!!!!!!!!!&&&&&&&&&&&&&
+    
+""" 
 
-# Import Necessary Packages
+# Import necessary packages
 import sys
 import math
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.stats import poisson
+from scipy.stats import poisson, gamma
 
-# import our Random class from Random.py file
+# import system, Random class, and MySort class
 sys.path.append(".")
 from MySort import MySort
+from Random import Random
 
-# main function for our Python code
+#Defining function to check for common elements in two lists
+# Help from this Tutorial: https://www.tutorialspoint.com/python-check-if-two-lists-have-any-element-in-common
+def commonelems(x,y):
+    common=0
+    for value in x:
+        if value in y:
+            common=1
+    if(not common):
+        print("The LLRs have no common elements")
+        return False
+    else:
+        print("The LLRs have common elements")
+        return True
+
+# Main function for our analysis code
 if __name__ == "__main__":
    
-    haveInput = False
-    haveInput2 = False
+    haveInputH0 = False
+    haveInputH1 = False
     
     # To pass in the data file to be analyzed from the command line
     if '-inputH0' in sys.argv:
         p = sys.argv.index('-inputH0')
-        InputFile = sys.argv[p+1]
-        haveInput = True
+        InputFileH0 = sys.argv[p+1]
+        haveInputH0 = True
             
     if '-inputH1' in sys.argv:   
         p = sys.argv.index('-inputH1')
-        InputFile2 = sys.argv[p+1]
-        haveInput2 = True
-    
-    
-    if '-h' in sys.argv or '--help' in sys.argv or not haveInput or not haveInput2:
+        InputFileH1 = sys.argv[p+1]
+        haveInputH1 = True
+        
+    if '-h' in sys.argv or '--help' in sys.argv or not haveInputH0 or not haveInputH1:
         print ("Usage: %s [options] [input file]" % sys.argv[0])
         print ("  options:")
         print ("   --help(-h)          print options")
@@ -63,185 +67,185 @@ if __name__ == "__main__":
         print (" -inputH1 [filename]   alternative hypothesis data to be analyzed")
         sys.exit(1)
     
+        
     """ 
-    Read in data: 
-    (1) Get Rate used, 
-    (2) Append number of goals measured to an array, 
-    (3) Calculate the average per experiment, average of goals per set 
+    Read in data and computer numerical estimate of probability distribution
     """
-    # Reading in Data from Hypothesis 0
     Nmeas = 1
-    goals = []
-    goals_avg = []
-    need_rate = True
     
-    with open(InputFile) as ifile:
+    # Read in and sort Data from Hypothesis H0
+    Nmeas0 = 1
+    H0goals = []
+    Nexp0 = 0
+    
+    with open(InputFileH0) as ifile:
         for line in ifile:
-            if need_rate:
-                need_rate = False
-                rate = float(line)
-                continue
-            
+            Nexp0 += 1
             lineVals = line.split()
-            Nmeas = len(lineVals)
-            t_avg = 0
+            Nmeas0 = len(lineVals)
             for v in lineVals:
-                t_avg += float(v)
-                goals.append(float(v))
-
-            t_avg /= Nmeas
-            goals_avg.append(t_avg)\
+                H0goals.append(float(v))
     
-    #print("goals 1: ", goals)
-    
-    # Reading in Data from Hypothesis 1
-    Nmeas2 = 1 
-    goals2 = []
-    goals2_avg = []
-    need_rate2 = True
-    
-    with open(InputFile2) as ifile:
-        for line in ifile:
-            if need_rate2:
-                need_rate2 = False
-                rate2 = float(line)
-                continue
-                
-            lineVals2 = line.split()
-            Nmeas2 = len(lineVals2)
-            t_avg2 = 0
-            for m in lineVals2:
-                t_avg2 += float(m)
-                goals2.append(float(m))
-            
-            t_avg2 /= Nmeas2
-            goals2_avg.append(t_avg)\
-            
-    #print("goals 2: ", goals2)
-    
-    """ Analysis of Data """
-    
-    """ Sort the Arrays """
     Sorter = MySort()
-    
-    goals = Sorter.BubbleSort(goals)
-    goals_avg = Sorter.BubbleSort(goals_avg)
-    
-    goals2 = Sorter.BubbleSort(goals2)
-    goals2_avg = Sorter.BubbleSort(goals2_avg)
-    
-    
-    """ Code to calculate different quantiles of the assorted arrays of outcomes """
-    
-    # Quantiles of Times array
-    print("goals of H0 : ", goals)
-    print("Q1 quantile of goals H0: ", np.quantile(goals, .25))
-    print("Q2 quantile of goals H0: ", np.quantile(goals, .50))
-    print("Q3 quantile of goals H0: ", np.quantile(goals, .75))
+    H0goals = Sorter.BubbleSort(H0goals)
+    H0_max = np.max(H0goals)
+    H0_min = np.min(H0goals)
+    H0_bins = list(range(int(H0_max + 1.0))) # add one, so that the max number of goals will be included in bin count.     
 
-    print("goals of H1 : ", goals2)
-    print("Q1 quantile of goals H1: ", np.quantile(goals2, .25))
-    print("Q2 quantile of goals H1: ", np.quantile(goals2, .50))
-    print("Q3 quantile of goals H1: ", np.quantile(goals2, .75))
+                
+    # Read in and sort Data from Hypothesis H1
+    Nmeas1 = 1
+    H1goals = []
     
+    with open(InputFileH1) as ifile:
+        for line in ifile:
+            lineVals = line.split()
+            Nmeas1 = len(lineVals)
+            for v in lineVals:
+                H1goals.append(float(v))
     
-    """ Plotting Data to Visualize """
+    H1goals = Sorter.BubbleSort(H1goals)
+    H1_max = np.max(H1goals)
+    H1_min = np.min(H1goals)
+    H1_bins = list(range(int(H1_max + 1.0))) 
+    # add one, so that the max number of goals will be included in bin count - ith bin = number of times i goals were scored
     
-    # create histogram of the times (or measurement data)
-    n, bins, patches = plt.hist(goals, bins=18, density=True, histtype='stepfilled', color='lightblue', ec='darkcyan', orientation='vertical', alpha=0.75, label='H0 Data with Rate: '+str(rate))
-    n, bins, patches = plt.hist(goals2, bins=18, density=True, histtype='stepfilled', color='bisque', ec='orange', orientation='vertical', alpha=0.75, label='H1 Data with Rate: '+str(rate2))
+    # For our simulation, the number of measurments should match, so this step checks that  
+    if Nmeas1 == Nmeas0:
+        Nmeas = Nmeas1
 
+        
+    """ Histogram of Vector of Outcomes """
     
-    # plot formating options
-    title = ' ***CHANGE**** Random Sampling of Goals under Two Different Rate Parameter Hypotheses'
-    plt.xlabel('X - Number of Goals', fontsize=12)
-    plt.ylabel('Probability', fontsize=12)
-    plt.title(title, fontsize=14)
-    plt.grid(True)
+    title1 = "H0 Simulated Data - Alpha: 2 & Beta: 1.5"
+    title2 = "H1 Simulated Data - Alpha: 4 & Beta: 2.5"
     
-    # add vertical lines to show the quantiles:
-    plt.axvline(x = np.quantile(goals, .25), color = 'darkgreen', linewidth = 1.5, label = 'Quantile 1 of H0')
-    plt.axvline(x = np.quantile(goals, .50), color = 'royalblue', linewidth = 1.5, label = 'Quantile 2 or Median of H0')
-    plt.axvline(x = np.quantile(goals, .75), color = 'mediumpurple', linewidth = 1.5, label = 'Quantile 3 of H0')
-    
-    plt.axvline(x = np.quantile(goals2, .25), color = 'maroon', linewidth = 1.5, label = 'Quantile 1 of H1')
-    plt.axvline(x = np.quantile(goals2, .50), color = 'lightcoral', linewidth = 1.5, label = 'Quantile 2 or Median of H1')
-    plt.axvline(x = np.quantile(goals2, .75), color = 'gold', linewidth = 1.5, label = 'Quantile 3 of H1')
-    
-    # Show Legend
+    plt.hist(H0goals, bins=H0_bins, alpha=0.5, histtype="bar", color='purple', edgecolor="black", label=title1)
+    plt.hist(H1goals, bins=H1_bins, alpha=0.5, histtype="bar",color='green', edgecolor="black", label=title2)
+    plt.title("Histogram of Simulated Data")
     plt.legend()
-
-    # show figure (program only continue once closed)
+    plt.xlabel("Number of Goals Scored in Single Game")
+    plt.ylabel("Number of Measurements")
     plt.show()
     
     
-    """ Calculating the Log Likelihood Ratio for Each Experiment Under Each Hypothesis """
+    """ Probability Distribution Estimate """
+    # Number of total experiments
+    Nmeas = Nmeas0 * Nexp0
     
-    """ Algorithm to Calculate LogLikeRatio for H0 """
+    #create a list of the probabilities for H0
+    H0_probs = []
+    H0_counts = []
+
+    for i in H0_bins:
+        counts = H0goals.count(i)
+        prob = counts / Nmeas
+        H0_probs.append(prob)
+        H0_counts.append(counts)
+    
+    #print("H0 num of goals: ", H0_bins)
+    #print("H0 probs: ", H0_probs)
+    #print("H0 counts: ", H0_counts)
+    
+    # create a list of the probabilities or likelihoods for H1
+    H1_probs = []
+    H1_counts = []
+    
+    for l in H1_bins:
+        count = H1goals.count(l)
+        probs = count/ Nmeas
+        H1_probs.append(probs)
+        H1_counts.append(count)
+    
+    #print("H1 num of goals: ", H1_bins)
+    #print("H1 probs: ", H1_probs)
+    #print("H1 counts: ", H1_counts)
+    
+    """At the end of this step, we have three arrays at our disposal (for each hypothesis) One array is the number of goals scored in the dataset, nexxt is the probabilities of scoring that number of goals in a game, and lastly, the counts"""
+    
+    """ Histogram of Probability Distribution """
+    title1 = "H0 Probabilities - Alpha: 2 & Beta: 1.5"
+    title2 = "H1 Probabilities - Alpha: 4 & Beta: 2.5"
+    
+    plt.plot(H0_bins, H0_probs, color='purple', label=title1)
+    plt.plot(H1_bins, H1_probs, color='green', label=title2)
+    plt.title("Probability Distribution")
+    plt.legend()
+    plt.ylabel("Probability")
+    plt.xlabel("Number of Goals Scored")
+    plt.show()
+    
+    
+    """ Calculate the Log Likelihood Ratio """
+    # In this portion of the code, we will actually calculate the Log Likelihood Ratio (LLR) for the data. We will find the LLR for each experiment we did. 
+    
+    # LLR for Hypothesis H0
     LogLikeRatio_H0 = []
-    with open(InputFile) as ifile:
-        H0_data = np.loadtxt(InputFile, dtype=int, skiprows=1)
-        #print(H0_data)
+    with open(InputFileH0) as ifile:
+        H0_data = np.loadtxt(InputFileH0, dtype=int)
+        #print("H0 Data: ", H0_data)
         
-        # loops over each experiment
-        for i in H0_data:        
-            result_H0 = 1
-            result_H1 = 1
-            LLR_H0 = 1
-
-            # loops over each value for each experiment to calculate the probability
-            for j in i:
-                prob_H0 = poisson.pmf(k=j, mu=rate)
-                prob_H1 = poisson.pmf(k=j, mu=rate2)
-                result_H0 = result_H0 * prob_H0
-                result_H1 = result_H1 * prob_H1
-                
-            LLR_H0 = math.log( result_H1 / result_H0 )
-            # append that to the array of likelihoods
-            LogLikeRatio_H0.append(LLR_H0)
+        # loop over each experiment
+        for i in H0_data:
+            result_H0 = 0
+            log_H0 = 1
             
-    LogLikeRatio_H0 = Sorter.BubbleSort(LogLikeRatio_H0) 
-    print("LogLikeRatio for H0: ", LogLikeRatio_H0)
+            for j in i:
+                count_H0 = H0goals.count(j)
+                prob_H0 = count_H0 / Nmeas
+                
+                count_H1 = H1goals.count(j)
+                prob_H1 = count_H1 / Nmeas
+                
+                log_H0 = math.log(prob_H1 / prob_H0)
+                result_H0 = result_H0 + log_H0
+            
+            LogLikeRatio_H0.append(result_H0)
+        print("LogLikeRatio for H0: ", LogLikeRatio_H0)
+        print("length: ", len(LogLikeRatio_H0))
+            
     
-    
-    """ Same Algrithm for Hypothese H1 """
+    # LLR for Hypothesis H1
     LogLikeRatio_H1 = []
-    with open(InputFile2) as ifile:
-        H1_data = np.loadtxt(InputFile2, dtype=int, skiprows=1)
-        #print(H1_data)
+    with open(InputFileH1) as ifile:
+        H1_data = np.loadtxt(InputFileH1, dtype=float)
+        #print("H1_data: ", H1_data)
         
-        # loops over each experiment
+        # loop over each experiment
         for i in H1_data:
-            result_H0 = 1
-            result_H1 = 1
-            LLR_H1 = 1
-
-            # loops over each value for each experiment to calculate the probability
-            for j in i:
-                prob_H0 = poisson.pmf(k=j, mu=rate)
-                prob_H1 = poisson.pmf(k=j, mu=rate2)
-                result_H0 = result_H0 * prob_H0
-                result_H1 = result_H1 * prob_H1
-                
-            LLR_H1 = math.log( result_H1 / result_H0 )
-            # append that to the array of likelihoods
-            LogLikeRatio_H1.append(LLR_H1)
+            result_H1 = 0
+            log_H1 = 1
             
-    LogLikeRatio_H1 = Sorter.BubbleSort(LogLikeRatio_H1)
-    print("LogLikeRatio_H1: ", LogLikeRatio_H1)
+            for j in i:
+                count_H0 = H0goals.count(j)
+                prob_H0 = count_H0 / Nmeas
+                #print(prob_H0)
+                
+                count_H1 = H1goals.count(j)
+                prob_H1 = count_H1 / Nmeas
+                #print(prob_H1)
+                
+                if prob_H0 != 0.0:
+                    log_H1 = math.log(prob_H1 / prob_H0)
+                    result_H1 = result_H1 + log_H1
+                else:
+                    continue
+            if prob_H0 != 0.0:
+                LogLikeRatio_H1.append(result_H1)
+                
+        print("LogLikeRatio for H1: ", LogLikeRatio_H1)
+        print("length: ", len(LogLikeRatio_H1))
     
-    
-    """Calculate Critical Test Statistic of H0"""
+    # Calculate the critical test statistic of H0
     # Set confidence level
-    alpha = 0.98
+    alpha = 0.95
     
-    # Find which critical lambda value that corresponds to that significance level
+    # Find critical lambda value that corresponds to that significance level
     lambda_crit = np.quantile(LogLikeRatio_H0, alpha)
-    print("lamda crit: ", lambda_crit)
+    print("Lambda crit: ", lambda_crit)
     
-  
-    """ Finding Beta and the Power of Test (1-Beta) """
-    # Find lamda crit in H1 array - index position
+    # Find Hypothesis Test Beta and Power of the Test (1-Beta)
+    # *note this is different than the previous beta for the gamma function*
     difference_array = np.absolute(LogLikeRatio_H1 - lambda_crit)
     index = difference_array.argmin()
     print(index)
@@ -249,35 +253,43 @@ if __name__ == "__main__":
     # Number of experiments 
     Nexp = len(LogLikeRatio_H1)
     
-    # Calculate Beta
-    beta = index / Nexp
-    print("Beta: ", beta)
+    if commonelems(LogLikeRatio_H0,LogLikeRatio_H1) == True:
+        # Calculate Beta
+        beta = index / Nexp
+        print("Beta: ", beta)
 
-    # Calculate the Power of the test
-    power_of_test = 1 - beta
-    print("Power of Test: ", power_of_test)
-    
-    
+        # Calculate the Power of the test
+        power_of_test = 1 - beta
+        print("Power of Test: ", power_of_test)
+
     """Plot the Log Likelihood Ratios for these Hypotheses"""
-    n, bins, patches = plt.hist(LogLikeRatio_H0, bins=18, density=True, 
+    n, bins, patches = plt.hist(LogLikeRatio_H0, bins='auto', density=True, 
                                 histtype='stepfilled', color='lightblue', ec='darkcyan', 
-                                orientation='vertical', alpha=0.75, label='Probability(X|H0) testing hypothesis $\lambda$ = ' + str(rate))
-    n, bins, patches = plt.hist(LogLikeRatio_H1, bins=18, density=True, 
+                                orientation='vertical', alpha=0.75, 
+                                label='Probability(X|H0)')
+    n, bins, patches = plt.hist(LogLikeRatio_H1, bins='auto', density=True, 
                                 histtype='stepfilled', color='bisque', ec='orange', 
-                                orientation='vertical', alpha=0.75, label='Probability(X|H1)testing hypothesis $\lambda$ = ' + str(rate2))
+                                orientation='vertical', alpha=0.75, 
+                                label='Probability(X|H1)')
+   
     
     # Plot Formatting
-    title = ' Simulated Random Sampling of Goals under Two Different Rate Parameter Hypotheses'
+    title = ' Simulated Random Sampling of Goals under Rate Prior Hypotheses'
     plt.xlabel('$\\lambda = \\log({\\cal L}_{\\mathbb{H}_{1}}/{\\cal L}_{\\mathbb{H}_{0}})$', fontsize=12)
     plt.ylabel('Probability', fontsize=12)
     plt.title(title, fontsize=14)
     plt.grid(True)
     
     # plot critical lambda
-    plt.axvline(x = lambda_crit, color = 'palevioletred', linewidth = 1, label = 'Critical Test Statistic for α = ' + str(alpha) + ' Confidence Level')
+    plt.axvline(x = lambda_crit, color = 'palevioletred', linewidth = 1, 
+                label = 'Critical Test Statistic for α = ' + str(alpha) + ' Confidence Level')
     
-    # display the beta / power of test calculated
-    plt.text(-25, 0.095, 'Power of the Test $1-\u03B2$: ' + str(power_of_test), fontsize = 10)
+    if commonelems(LogLikeRatio_H0, LogLikeRatio_H1) == True:
+        # display the beta / power of test calculated
+        plt.text(-25, 0.05, 'Power of the Test $1-\u03B2$: ' + str(power_of_test), fontsize = 10)
     
+    if commonelems(LogLikeRatio_H0, LogLikeRatio_H1) == False:
+        plt.text(-25, 0.05, 'LLRs have no overlap')
+        
     plt.legend()
     plt.show()
