@@ -11,9 +11,9 @@ import numpy as np
 sys.path.append(".")
 from Random import Random
 
-#################
-# MySort class
-#################
+######################################
+# MySort class called from other codes
+######################################
 
 # class to sort lists of objects in different ways
 class MySort:
