@@ -117,8 +117,8 @@ if __name__ == "__main__":
         
     """ Histogram of Vector of Outcomes """
     
-    title1 = "H0 Simulated Data - Alpha: 2 & Beta: 1.5"
-    title2 = "H1 Simulated Data - Alpha: 4 & Beta: 2.5"
+    title1 = "H0 Simulated Data"
+    title2 = "H1 Simulated Data"
     
     plt.hist(H0goals, bins=H0_bins, alpha=0.5, histtype="bar", color='purple', edgecolor="black", label=title1)
     plt.hist(H1goals, bins=H1_bins, alpha=0.5, histtype="bar",color='green', edgecolor="black", label=title2)
@@ -164,8 +164,8 @@ if __name__ == "__main__":
     """At the end of this step, we have three arrays at our disposal (for each hypothesis) One array is the number of goals scored in the dataset, nexxt is the probabilities of scoring that number of goals in a game, and lastly, the counts"""
     
     """ Histogram of Probability Distribution """
-    title1 = "H0 Probabilities - Alpha: 2 & Beta: 1.5"
-    title2 = "H1 Probabilities - Alpha: 4 & Beta: 2.5"
+    title1 = "H0 Probabilities"
+    title2 = "H1 Probabilities"
     
     plt.plot(H0_bins, H0_probs, color='purple', label=title1)
     plt.plot(H1_bins, H1_probs, color='green', label=title2)
@@ -197,6 +197,12 @@ if __name__ == "__main__":
                 count_H1 = H1goals.count(j)
                 prob_H1 = count_H1 / Nmeas
                 
+                # Band-aid to ensure functionality 
+                if prob_H0 == 0.000:
+                    prob_H0 = 1 / Nmeas
+                if prob_H1 == 0.000:
+                    prob_H1 = 1 / Nmeas
+                
                 log_H0 = math.log(prob_H1 / prob_H0)
                 result_H0 = result_H0 + log_H0
             
@@ -220,25 +226,28 @@ if __name__ == "__main__":
                 count_H0 = H0goals.count(j)
                 prob_H0 = count_H0 / Nmeas
                 #print(prob_H0)
-                
+            
                 count_H1 = H1goals.count(j)
                 prob_H1 = count_H1 / Nmeas
                 #print(prob_H1)
                 
-                if prob_H0 != 0.0:
-                    log_H1 = math.log(prob_H1 / prob_H0)
-                    result_H1 = result_H1 + log_H1
-                else:
-                    continue
-            if prob_H0 != 0.0:
-                LogLikeRatio_H1.append(result_H1)
+                # Band-aid to ensure functionality 
+                if prob_H0 == 0.000:
+                    prob_H0 = 1 / Nmeas
+                if prob_H1 == 0.000:
+                    prob_H1 = 1 / Nmea
+                        
+                log_H1 = math.log(prob_H1 / prob_H0)
+                result_H1 = result_H1 + log_H1
+                
+            LogLikeRatio_H1.append(result_H1)
                 
         print("LogLikeRatio for H1: ", LogLikeRatio_H1)
         print("length: ", len(LogLikeRatio_H1))
     
     # Calculate the critical test statistic of H0
     # Set confidence level
-    alpha = 0.95
+    alpha = 0.92
     
     # Find critical lambda value that corresponds to that significance level
     lambda_crit = np.quantile(LogLikeRatio_H0, alpha)
@@ -253,14 +262,17 @@ if __name__ == "__main__":
     # Number of experiments 
     Nexp = len(LogLikeRatio_H1)
     
-    if commonelems(LogLikeRatio_H0,LogLikeRatio_H1) == True:
-        # Calculate Beta
-        beta = index / Nexp
+    # Calculate Beta
+    beta = LogLikeRatio_H1[index] / Nexp
+    # Checking that Beta is withinv value
+    if beta in range(0,1):
         print("Beta: ", beta)
+    else: 
+        print("Data not suitable for hypothesis testing, please check data again")
 
-        # Calculate the Power of the test
-        power_of_test = 1 - beta
-        print("Power of Test: ", power_of_test)
+    # Calculate the Power of the test
+    power_of_test = 1 - beta
+    print("Power of Test: ", power_of_test)
 
     """Plot the Log Likelihood Ratios for these Hypotheses"""
     n, bins, patches = plt.hist(LogLikeRatio_H0, bins='auto', density=True, 
@@ -284,12 +296,8 @@ if __name__ == "__main__":
     plt.axvline(x = lambda_crit, color = 'palevioletred', linewidth = 1, 
                 label = 'Critical Test Statistic for α = ' + str(alpha) + ' Confidence Level')
     
-    if commonelems(LogLikeRatio_H0, LogLikeRatio_H1) == True:
-        # display the beta / power of test calculated
-        plt.text(-25, 0.05, 'Power of the Test $1-\u03B2$: ' + str(power_of_test), fontsize = 10)
-    
-    if commonelems(LogLikeRatio_H0, LogLikeRatio_H1) == False:
-        plt.text(-25, 0.05, 'LLRs have no overlap')
+    # display the beta / power of test calculated
+    plt.text(-10, 0.15, 'Power of the Test $1-\u03B2$: ' + str(power_of_test), fontsize = 10)
         
     plt.legend()
     plt.show()
