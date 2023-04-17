@@ -52,9 +52,6 @@ if __name__ == "__main__":
     # default seed
     seed = 5555
 
-    # default rate parameter (number of goals per game)
-    rate = 1
-
     # default number of measurements which corresponds to games since we take one measurement a game
     Nmeas = 100
 
@@ -109,10 +106,10 @@ if __name__ == "__main__":
         RateOutputFileName = sys.argv[p+1]
         rateDoOutputFile = True
 
-    # class instance of our Random class using seed - It will call for the data to be sampled from a poisson distribution
+    # class instance of our Random class using seed - It will call for the data to be sampled from a poisson distribution as well as a gamma distribution for our rate values
     random = Random(seed)
     
-    # Print alpha and beta used
+    # Print alpha and beta used in gamma distribution
     print("Alpha = ", a)
     print("Beta = ", b)
     
@@ -158,7 +155,6 @@ if __name__ == "__main__":
     H0 = stats.gamma.pdf(x, a=a, scale=b)
     #create plot of Gamma distribution
     title = "Gamma Distribution with Alpha: " + str(a) + " & Beta: " + str(b)
-
     plt.plot(x, H0, color='purple', label = title)
     plt.hist(rates_list, density=True, bins='auto',histtype="bar", alpha=0.2, color='pink',ec='black',label= "Sampled rates from Gamma Distribution")
     

@@ -5,11 +5,11 @@ Purpose: To analyze the data and perform a hypothesis test following the procedu
     1. From the command line, the user can input the two datasets for the two hypotheses we are testing.
     2. The code will read in each file, and create an array of the measurements.
     
+* You will notice several commented out print statements. Those are mainly used to track that inputs, outputs, and calculations are being done correctly for debugging purposes. If you are are running into an issue, those can help find the root cause. 
+    
 Author: @aelieber1
 Code also adapted from these sources:
     - 
-    
-    
     
     FIX ME FIX ME !!!!!!!!!!!!!&&&&&&&&&&!!!!!!!!!!!!!&&&&&&&&&&&&&
     
@@ -90,7 +90,9 @@ if __name__ == "__main__":
     H0goals = Sorter.BubbleSort(H0goals)
     H0_max = np.max(H0goals)
     H0_min = np.min(H0goals)
-    H0_bins = list(range(int(H0_max + 1.0))) # add one, so that the max number of goals will be included in bin count.     
+    H0_bins = list(range(int(H0_max + 1.0))) 
+    # added one, so that the max number of goals will be included in bin count.    
+    # We define the bins in this way so that the histogram can be binned by integer inputs and puts things in the proper format to numerically compute the probability 
 
                 
     # Read in and sort Data from Hypothesis H1
@@ -136,7 +138,7 @@ if __name__ == "__main__":
     #create a list of the probabilities for H0
     H0_probs = []
     H0_counts = []
-
+    
     for i in H0_bins:
         counts = H0goals.count(i)
         prob = counts / Nmeas
@@ -197,7 +199,7 @@ if __name__ == "__main__":
                 count_H1 = H1goals.count(j)
                 prob_H1 = count_H1 / Nmeas
                 
-                # Band-aid to ensure functionality 
+                # Band-aid to ensure functionality so that calculations do not become undefined 
                 if prob_H0 == 0.000:
                     prob_H0 = 1 / Nmeas
                 if prob_H1 == 0.000:

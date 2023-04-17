@@ -21,6 +21,7 @@ packages are required:
 - `numpy`
 - `scipy.stats`
     - `from scipy.stats import poisson`
+    - `from scipy.stats import gamma`
 - `math`
 
 In order to compile the programs `GoalDataAnalysis.py` and `MySort.py`, these external 
@@ -30,6 +31,7 @@ packages are required:
 - `matplotlib.pyplot`
 - `pandas`
 - `scipy.stats` import `poisson`
+- `scipy.stats` import `gamma`
 
 In order to compile the programs `GoalDataAnalysis.py` and `MySort.py`, these external 
 packages are required:
@@ -44,6 +46,7 @@ line by typing:
 
 This script will either print the result to the command line or save to a file if given a filename from the command line.
 
+FIX FIX FIX FIX 
 The other files in the repository `H0_data_lam_3_10000.txt`, `H1_data_lam_5_10000.txt`, `H1_data_lam_9_10000.txt` are examples of data textfiles that were the output of running `GoalData.py` under different rate parameters for 20 measurements per 10000 experiments. 
 
 
@@ -58,7 +61,7 @@ This script will conduct our analysis and hypothesis testing of these two datase
 - All of the Python programs can be called from the command line with the `-h` 
 or `--help` flag, which will print the options
 
-- The files `MySort.py` and `Random.py` are called within the scripts adn should be 
+- The files `MySort.py` and `Random.py` are called within the scripts and should be 
 downloaded or cloned to run properly
 
 
