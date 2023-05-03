@@ -39,20 +39,19 @@ packages are required:
 
 ### Usage
 
-The python file `GoalData.py` which simulates the experiment can be run from the command
+The python file `GoalDataGeneration.py` which simulates the experiment can be run from the command
 line by typing:
 
-	<> python3 GoalData.py -rate [rate] -seed [seed] -Nmeas [number of games observed] -Nexp [number of sets of measurments or seasons observed] -output ["filename"]
+	<> python3 GoalDataGeneration.py -rate [rate] -seed [seed] -Nmeas [number of games observed] -Nexp [number of sets of measurments or seasons observed] -output ["filename"]
 
 This script will either print the result to the command line or save to a file if given a filename from the command line.
 
-FIX FIX FIX FIX 
 The other files in the repository `H0_data_lam_3_10000.txt`, `H1_data_lam_5_10000.txt`, `H1_data_lam_9_10000.txt` are examples of data textfiles that were the output of running `GoalData.py` under different rate parameters for 20 measurements per 10000 experiments. 
 
 
 With the two datasets on hand from the previous script, the next python file to run is `GoalDataAnalysis.py`  which can be run from the commandline by typing:
 
-	<> python3 GoalData.py -inputH0 ["filename"] -inputH1 ["filename"]
+	<> python3 GoalDataAnalysis.py -inputH0 ["filename"] -inputH1 ["filename"]
 
 This script will conduct our analysis and hypothesis testing of these two datasets and output two plots, (1) a histogram of the data provided from both hypotheses, and (2) a log likelihood ratio plot which includes the critical lambda value and the final power of the test calculated. 
 
