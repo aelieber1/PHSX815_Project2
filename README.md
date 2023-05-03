@@ -44,9 +44,13 @@ line by typing:
 
 	<> python3 GoalDataGeneration.py -rate [rate] -seed [seed] -Nmeas [number of games observed] -Nexp [number of sets of measurments or seasons observed] -output ["filename"]
 
+For help with these inputs, type the following command into your terminal and a list of input commands will be outputted. 
+
+	<> python3 GoalDataGeneration.py -h
+
 This script will either print the result to the command line or save to a file if given a filename from the command line.
 
-The other files in the repository `H0_data_lam_3_10000.txt`, `H1_data_lam_5_10000.txt`, `H1_data_lam_9_10000.txt` are examples of data textfiles that were the output of running `GoalData.py` under different rate parameters for 20 measurements per 10000 experiments. 
+The other files in the repository `act_testdataH0.txt`, `act_testdataH1.txt`, `data_2_1.5.txt`, and `data_3_1.1.txt` are examples of data textfiles that were the output of running `GoalData.py` under different rate parameters for 20 measurements per 10000 experiments. 
 
 
 With the two datasets on hand from the previous script, the next python file to run is `GoalDataAnalysis.py`  which can be run from the commandline by typing:

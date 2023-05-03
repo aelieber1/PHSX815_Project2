@@ -128,7 +128,6 @@ if __name__ == "__main__":
         outfile.close()
         
     else:
-        print(rate)
         for e in range(0,Nexp):
             for t in range(0,Nmeas):
                 rate = random.Gamma(a,b)
