@@ -266,12 +266,12 @@ if __name__ == "__main__":
     
     # Calculate Beta
     beta = LogLikeRatio_H1[index] / Nexp
-    # Checking that Beta is withinv value
-    if beta in range(0,1):
+    # Checking that Beta is within value
+    if beta in range(0, 1):
         print("Beta: ", beta)
     else: 
-        print("Data not suitable for hypothesis testing, please check data again")
-
+        print(" Please check plots to ensure data is suitable for hypothesis testing, a.k.a. do they overlap at all?")
+        
     # Calculate the Power of the test
     power_of_test = 1 - beta
     print("Power of Test: ", power_of_test)

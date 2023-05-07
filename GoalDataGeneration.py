@@ -42,8 +42,9 @@ if __name__ == "__main__":
     if '-h' in sys.argv or '--help' in sys.argv:
         print ("Usage: %s [-seed number]" % sys.argv[0])
         print (" -seed               seed value")
-        print (" -rate               rate value, # goals per game")
         print (" -Nmeas              number of games observed per season")
+        print (" -alpha              Gamma prior distribution shape parameter")
+        print (" -beta               Gamma prior distribution reciprocal of scale parameter")
         print (" -Nexp               number of seasons observed")
         print (" -output [filename]  filename to save data output to") 
         print (" -rateoutput [filename] filename to save rate list to -- used for GammaGraphComparison purposes")
@@ -143,9 +144,6 @@ if __name__ == "__main__":
             rate_file.write(str(l))
         rate_file.close()
     
-    
-    #print("Rates list: ",rates_list)
-
     # Plot gamma distribution used along with lambda values sampled through running the simulation
     #define x-axis values
     x = np.linspace (0, 30, 2000) 
