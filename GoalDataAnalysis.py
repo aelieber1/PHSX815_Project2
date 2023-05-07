@@ -9,10 +9,9 @@ Purpose: To analyze the data and perform a hypothesis test following the procedu
     
 Author: @aelieber1
 Code also adapted from these sources:
-    - 
-    
-    FIX ME FIX ME !!!!!!!!!!!!!&&&&&&&&&&!!!!!!!!!!!!!&&&&&&&&&&&&&
-    
+    - @crogan & associated PHSX 815 homework assignments
+    - statistics by Jim - https://statisticsbyjim.com/probability/gamma-distribution/
+    - https://vioshyvo.github.io/Bayesian_inference/Bayesian-inference-2017.pdf
 """ 
 
 # Import necessary packages
