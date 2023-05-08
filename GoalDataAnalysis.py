@@ -27,7 +27,7 @@ sys.path.append(".")
 from MySort import MySort
 from Random import Random
 
-#Defining function to check for common elements in two lists
+#Defining function to check for common elements in two lists. Helps to debug if there are issues with data sets that do not overlap. Please read the write up associated for more information on overlapped/separated scenarios. 
 # Help from this Tutorial: https://www.tutorialspoint.com/python-check-if-two-lists-have-any-element-in-common
 def commonelems(x,y):
     common=0
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     
         
     """ 
-    Read in data and computer numerical estimate of probability distribution
+    Read in data and compute numerical estimate of probability distribution
     """
     Nmeas = 1
     
